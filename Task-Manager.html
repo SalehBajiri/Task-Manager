@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .task-card {
+            transition: all 0.3s ease;
+        }
+        .task-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <header class="bg-blue-600 text-white shadow-md">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <h1 class="text-xl font-bold">Task Manager</h1>
+                
+                <div class="hidden md:block">
+                    <nav>
+                        <ul class="flex space-x-6">
+                            <li><a href="#" class="hover:text-blue-200" id="dashboard-link">Dashboard</a></li>
+                            <li><a href="#" class="hover:text-blue-200" id="categories-link">Categories</a></li>
+                            <li>
+                                <span class="text-blue-200 mr-4" id="user-greeting">Hello, Guest</span>
+                            </li>
+                            <li>
+                                <button id="logout-btn" class="bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded hidden">
+                                    Logout
+                                </button>
+                                <button id="login-btn" class="bg-green-500 hover:bg-green-600 text-white px-4 py-1 rounded">
+                                    Login
+                                </button>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+                
+                <div class="md:hidden">
+                    <button id="mobile-menu-btn" class="text-white focus:outline-none">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <div id="mobile-menu" class="md:hidden hidden mt-2 pb-2">
+                <nav>
+                    <ul class="flex flex-col space-y-2">
+                        <li><a href="#" class="hover:text-blue-200" id="mobile-dashboard-link">Dashboard</a></li>
+                        <li><a href="#" class="hover:text-blue-200" id="mobile-categories-link">Categories</a></li>
+                        <li>
+                            <button id="mobile-logout-btn" class="bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded hidden">
+                                Logout
+                            </button>
+                            <button id="mobile-login-btn" class="bg-green-500 hover:bg-green-600 text-white px-4 py-1 rounded">
+                                Login
+                            </button>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+    <main class="container mx-auto px-4 py-8">
+        <!-- Login Form -->
+        <div id="login-form" class="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+            <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Login</h2>
+            
+            <div id="login-error" class="mb-4 p-3 bg-red-100 text-red-700 rounded hidden"></div>
+            
+            <form id="login-form-element">
+                <div class="mb-4">
+                    <label for="username" class="block text-gray-700 font-medium mb-2">
+                        Username or Email
+                    </label>
+                    <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        required
+                    />
+                </div>
+                
+                <div class="mb-6">
+                    <label for="password" class="block text-gray-700 font-medium mb-2">
+                        Password
+                    </label>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        required
+                    />
+                </div>
+                
+                <button
+                    type="submit"
+                    id="login-submit-btn"
+                    class="w-full py-2 px-4 rounded-lg text-white font-medium bg-blue-600 hover:bg-blue-700"
+                >
+                    Login
+                </button>
+            </form>
+            
+            <div class="mt-4 text-center">
+                <p class="text-gray-600">
+                    Don't have an account?
+                    <a href="#" id="register-link" class="text-blue-600 hover:underline">
+                        Register
+                    </a>
+                </p>
+            </div>
+        </div>
+
+        <!-- Register Form -->
+        <div id="register-form" class="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md hidden">
+            <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Register</h2>
+            
+            <div id="register-error" class="mb-4 p-3 bg-red-100 text-red-700 rounded hidden"></div>
+            
+            <form id="register-form-element">
+                <div class="mb-4">
+                    <label for="reg-username" class="block text-gray-700 font-medium mb-2">
+                        Username
+                    </label>
+                    <input
+                        type="text"
+                        id="reg-username"
+                        name="username"
+                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        required
+                    />
+                </div>
+                
+                <div class="mb-4">
+                    <label for="reg-email" class="block text-gray-700 font-medium mb-2">
+                        Email
+                    </label>
+                    <input
+                        type="email"
+                        id="reg-email"
+                        name="email"
+                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        required
+                    />
+                </div>
+                
+                <div class="mb-4">
+                    <label for="reg-password" class="block text-gray-700 font-medium mb-2">
+                        Password
+                    </label>
+                    <input
+                        type="password"
+                        id="reg-password"
+                        name="password"
+                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        required
+                        minlength="6"
+                    />
+                </div>
+                
+                <div class="mb-6">
+                    <label for="reg-confirm-password" class="block text-gray-700 font-medium mb-2">
+                        Confirm Password
+                    </label>
+                    <input
+                        type="password"
+                        id="reg-confirm-password"
+                        name="confirmPassword"
+                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        required
+                        minlength="6"
+                    />
+                </div>
+                
+                <button
+                    type="submit"
+                    id="register-submit-btn"
+                    class="w-full py-2 px-4 rounded-lg text-white font-medium bg-blue-600 hover:bg-blue-700"
+                >
+                    Register
+                </button>
+            </form>
+            
+            <div class="mt-4 text-center">
+                <p class="text-gray-600">
+                    Already have an account?
+                    <a href="#" id="login-link" class="text-blue-600 hover:underline">
+                        Login
+                    </a>
+                </p>
+            </div>
+        </div>
+        <!-- Dashboard / Task List -->
+        <div id="dashboard" class="hidden">
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-2xl font-bold text-gray-800">My Tasks</h1>
+                <button
+                    id="new-task-btn"
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center"
+                >
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    New Task
+                </button>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md p-4 mb-6">
+                <h2 class="text-lg font-semibold mb-3">Filters</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Status</label>
+                        <select
+                            id="status-filter"
+                            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                            <option value="">All Statuses</option>
+                            <option value="0">Todo</option>
+                            <option value="1">In Progress</option>
+                            <option value="2">Done</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Priority</label>
+                        <select
+                            id="priority-filter"
+                            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                            <option value="">All Priorities</option>
+                            <option value="0">Low</option>
+                            <option value="1">Medium</option>
+                            <option value="2">High</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Category</label>
+                        <select
+                            id="category-filter"
+                            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                            <option value="">All Categories</option>
+                            <!-- Categories will be populated dynamically -->
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tasks-loading" class="text-center py-10 hidden">
+                <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-600"></div>
+                <p class="mt-2 text-gray-600">Loading tasks...</p>
+            </div>
+
+            <div id="no-tasks" class="bg-white rounded-lg shadow-md p-10 text-center hidden">
+                <svg class="w-16 h-16 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+                <h3 class="mt-4 text-lg font-medium text-gray-900">No tasks found</h3>
+                <p class="mt-1 text-gray-500">Get started by creating a new task.</p>
+                <button
+                    id="empty-create-task-btn"
+                    class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg"
+                >
+                    Create Task
+                </button>
+            </div>
+
+            <div id="task-list" class="grid grid-cols-1 gap-4"></div>
+        </div>
+        <!-- Task Form -->
+        <div id="task-form" class="max-w-2xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md hidden">
+            <h2 class="text-2xl font-bold mb-6 text-center text-gray-800" id="task-form-title">
+                Create New Task
+            </h2>
+            
+            <div id="task-form-error" class="mb-4 p-3 bg-red-100 text-red-700 rounded hidden"></div>
+            
+            <form id="task-form-element">
+                <input type="hidden" id="task-id" value="" />
+                
+                <div class="mb-4">
+                    <label for="task-title" class="block text-gray-700 font-medium mb-2">
+                        Title *
+                    </label>
+                    <input
+                        type="text"
+                        id="task-title"
+                        name="title"
+                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        required
+                    />
+                </div>
+                
+                <div class="mb-4">
+                    <label for="task-description" class="block text-gray-700 font-medium mb-2">
+                        Description
+                    </label>
+                    <textarea
+                        id="task-description"
+                        name="description"
+                        rows="4"
+                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    ></textarea>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="task-due-date" class="block text-gray-700 font-medium mb-2">
+                        Due Date
+                    </label>
+                    <input
+                        type="date"
+                        id="task-due-date"
+                        name="due_date"
+                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label for="task-priority" class="block text-gray-700 font-medium mb-2">
+                            Priority
+                        </label>
+                        <select
+                            id="task-priority"
+                            name="priority"
+                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                            <option value="0">Low</option>
+                            <option value="1">Medium</option>
+                            <option value="2">High</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="task-status" class="block text-gray-700 font-medium mb-2">
+                            Status
+                        </label>
+                        <select
+                            id="task-status"
+                            name="status"
+                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                            <option value="0">Todo</option>
+                            <option value="1">In Progress</option>
+                            <option value="2">Done</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <label for="task-categories" class="block text-gray-700 font-medium mb-2">
+                        Categories
+                    </label>
+                    <select
+                        id="task-categories"
+                        name="categories"
+                        multiple
+                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        size="5"
+                    >
+                        <!-- Categories will be populated dynamically -->
+                    </select>
+                    <p class="text-sm text-gray-500 mt-1">Hold Ctrl (or Cmd) to select multiple categories</p>
+                </div>
+                
+                <div class="flex justify-between">
+                    <button
+                        type="button"
+                        id="task-cancel-btn"
+                        class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100"
+                    >
+                        Cancel
+                    </button>
+                    
+                    <button
+                        type="submit"
+                        id="task-submit-btn"
+                        class="px-4 py-2 rounded-lg text-white font-medium bg-blue-600 hover:bg-blue-700"
+                    >
+                        Create Task
+                    </button>
+                </div>
+            </form>
+        </div>
+        <!-- Categories Management -->
+        <div id="categories-section" class="hidden">
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-2xl font-bold text-gray-800">Categories</h1>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="md:col-span-2">
+                    <div class="bg-white rounded-lg shadow-md p-4">
+                        <h2 class="text-lg font-semibold mb-4">All Categories</h2>
+                        
+                        <div id="categories-loading" class="text-center py-10 hidden">
+                            <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-600"></div>
+                            <p class="mt-2 text-gray-600">Loading categories...</p>
+                        </div>
+
+                        <div id="no-categories" class="text-center py-6 hidden">
+                            <p class="text-gray-500">No categories found. Create your first category.</p>
+                        </div>
+
+                        <div id="category-list" class="grid grid-cols-1 gap-3"></div>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="bg-white rounded-lg shadow-md p-4">
+                        <h2 class="text-lg font-semibold mb-4" id="category-form-title">
+                            Add New Category
+                        </h2>
+                        
+                        <div id="category-form-error" class="mb-4 p-3 bg-red-100 text-red-700 rounded hidden"></div>
+                        
+                        <form id="category-form">
+                            <input type="hidden" id="category-id" value="" />
+                            
+                            <div class="mb-4">
+                                <label for="category-name" class="block text-gray-700 font-medium mb-2">
+                                    Category Name
+                                </label>
+                                <input
+                                    type="text"
+                                    id="category-name"
+                                    name="name"
+                                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    required
+                                />
+                            </div>
+                            
+                            <div class="mb-6">
+                                <label for="category-color" class="block text-gray-700 font-medium mb-2">
+                                    Color
+                                </label>
+                                <div class="flex items-center">
+                                    <input
+                                        type="color"
+                                        id="category-color-picker"
+                                        name="color-picker"
+                                        value="#3498db"
+                                        class="w-10 h-10 rounded border p-0 mr-3"
+                                    />
+                                    <input
+                                        type="text"
+                                        id="category-color"
+                                        name="color"
+                                        value="#3498db"
+                                        class="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        pattern="^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$"
+                                        title="Hex color code (e.g. #3498db)"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            
+                            <div class="flex justify-between">
+                                <button
+                                    type="button"
+                                    id="category-cancel-btn"
+                                    class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 hidden"
+                                >
+                                    Cancel
+                                </button>
+                                
+                                <button
+                                    type="submit"
+                                    id="category-submit-btn"
+                                    class="px-4 py-2 rounded-lg text-white font-medium bg-blue-600 hover:bg-blue-700 w-full"
+                                >
+                                    Add Category
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script>
+        // Mock data for demo
+        const DEMO_USER = {
+            id: 1,
+            username: 'demo_user',
+            email: 'demo@example.com',
+            password: 'password123'
+        };
+
+        const DEMO_CATEGORIES = [
+            { id: 1, name: 'Work', color: '#e74c3c', user_id: null },
+            { id: 2, name: 'Personal', color: '#2ecc71', user_id: null },
+            { id: 3, name: 'Shopping', color: '#f39c12', user_id: null },
+            { id: 4, name: 'Health', color: '#9b59b6', user_id: null },
+            { id: 5, name: 'Education', color: '#1abc9c', user_id: null },
+            { id: 6, name: 'Project A', color: '#3498db', user_id: 1 },
+            { id: 7, name: 'Project B', color: '#e74c3c', user_id: 1 },
+            { id: 8, name: 'Meetings', color: '#9b59b6', user_id: 1 },
+            { id: 9, name: 'Ideas', color: '#f1c40f', user_id: 1 }
+        ];
+
+        const DEMO_TASKS = [
+            {
+                id: 1,
+                title: 'Complete project proposal',
+                description: 'Write and submit the project proposal document with budget estimates',
+                due_date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                priority: 2,
+                status: 0,
+                user_id: 1,
+                categories: [6, 1],
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+            },
+            {
+                id: 2,
+                title: 'Weekly team meeting',
+                description: 'Discuss project progress and assign new tasks',
+                due_date: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                priority: 1,
+                status: 0,
+                user_id: 1,
+                categories: [8, 1],
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+            },
+            {
+                id: 3,
+                title: 'Research new technologies',
+                description: 'Look into new frameworks that could improve development efficiency',
+                due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                priority: 0,
+                status: 0,
+                user_id: 1,
+                categories: [1, 9],
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+            },
+            {
+                id: 4,
+                title: 'Buy groceries',
+                description: 'Milk, eggs, bread, and vegetables',
+                due_date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                priority: 1,
+                status: 0,
+                user_id: 1,
+                categories: [3],
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+            },
+            {
+                id: 5,
+                title: 'Prepare presentation',
+                description: 'Create slides for the client meeting next week',
+                due_date: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                priority: 2,
+                status: 0,
+                user_id: 1,
+                categories: [6, 1],
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+            }
+        ];
+
+        // State management
+        let currentUser = null;
+        let tasks = [...DEMO_TASKS];
+        let categories = [...DEMO_CATEGORIES];
+        let nextTaskId = 6;
+        let nextCategoryId = 10;
+        let editingTaskId = null;
+        let editingCategoryId = null;
+        // DOM Elements
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const dashboard = document.getElementById('dashboard');
+        const taskForm = document.getElementById('task-form');
+        const categoriesSection = document.getElementById('categories-section');
+
+        // Navigation
+        const dashboardLink = document.getElementById('dashboard-link');
+        const categoriesLink = document.getElementById('categories-link');
+        const mobileDashboardLink = document.getElementById('mobile-dashboard-link');
+        const mobileCategoriesLink = document.getElementById('mobile-categories-link');
+        const registerLink = document.getElementById('register-link');
+        const loginLink = document.getElementById('login-link');
+        const logoutBtn = document.getElementById('logout-btn');
+        const mobileLogoutBtn = document.getElementById('mobile-logout-btn');
+        const loginBtn = document.getElementById('login-btn');
+        const mobileLoginBtn = document.getElementById('mobile-login-btn');
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const userGreeting = document.getElementById('user-greeting');
+
+        // Mobile menu toggle
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Navigation handlers
+        dashboardLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            showDashboard();
+        });
+
+        mobileDashboardLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            showDashboard();
+            mobileMenu.classList.add('hidden');
+        });
+
+        categoriesLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            showCategories();
+        });
+
+        mobileCategoriesLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            showCategories();
+            mobileMenu.classList.add('hidden');
+        });
+
+        registerLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            showRegisterForm();
+        });
+
+        loginLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            showLoginForm();
+        });
+
+        logoutBtn.addEventListener('click', handleLogout);
+        mobileLogoutBtn.addEventListener('click', handleLogout);
+        
+        loginBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            showLoginForm();
+        });
+        
+        mobileLoginBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            showLoginForm();
+            mobileMenu.classList.add('hidden');
+        });
+
+        // Form submissions
+        document.getElementById('login-form-element').addEventListener('submit', handleLogin);
+        document.getElementById('register-form-element').addEventListener('submit', handleRegister);
+        document.getElementById('task-form-element').addEventListener('submit', handleTaskSubmit);
+        document.getElementById('category-form').addEventListener('submit', handleCategorySubmit);
+
+        // Task actions
+        document.getElementById('new-task-btn').addEventListener('click', showNewTaskForm);
+        document.getElementById('empty-create-task-btn').addEventListener('click', showNewTaskForm);
+        document.getElementById('task-cancel-btn').addEventListener('click', cancelTaskForm);
+        document.getElementById('category-cancel-btn').addEventListener('click', cancelCategoryForm);
+
+        // Filters
+        document.getElementById('status-filter').addEventListener('change', filterTasks);
+        document.getElementById('priority-filter').addEventListener('change', filterTasks);
+        document.getElementById('category-filter').addEventListener('change', filterTasks);
+
+        // Color picker sync
+        document.getElementById('category-color-picker').addEventListener('input', (e) => {
+            document.getElementById('category-color').value = e.target.value;
+        });
+        
+        document.getElementById('category-color').addEventListener('input', (e) => {
+            document.getElementById('category-color-picker').value = e.target.value;
+        });
+        // Helper functions
+        function showLoginForm() {
+            hideAllSections();
+            loginForm.classList.remove('hidden');
+            document.getElementById('username').focus();
+        }
+
+        function showRegisterForm() {
+            hideAllSections();
+            registerForm.classList.remove('hidden');
+            document.getElementById('reg-username').focus();
+        }
+
+        function showDashboard() {
+            if (!currentUser) {
+                showLoginForm();
+                return;
+            }
+            
+            hideAllSections();
+            dashboard.classList.remove('hidden');
+            loadTasks();
+        }
+
+        function showCategories() {
+            if (!currentUser) {
+                showLoginForm();
+                return;
+            }
+            
+            hideAllSections();
+            categoriesSection.classList.remove('hidden');
+            loadCategories();
+        }
+
+        function showNewTaskForm() {
+            hideAllSections();
+            taskForm.classList.remove('hidden');
+            document.getElementById('task-form-title').textContent = 'Create New Task';
+            document.getElementById('task-submit-btn').textContent = 'Create Task';
+            document.getElementById('task-form-element').reset();
+            document.getElementById('task-id').value = '';
+            document.getElementById('task-title').focus();
+            editingTaskId = null;
+            loadCategoriesForTaskForm();
+        }
+
+        function showEditTaskForm(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            if (!task) return;
+            
+            hideAllSections();
+            taskForm.classList.remove('hidden');
+            document.getElementById('task-form-title').textContent = 'Edit Task';
+            document.getElementById('task-submit-btn').textContent = 'Update Task';
+            
+            document.getElementById('task-id').value = task.id;
+            document.getElementById('task-title').value = task.title;
+            document.getElementById('task-description').value = task.description || '';
+            document.getElementById('task-due-date').value = task.due_date || '';
+            document.getElementById('task-priority').value = task.priority;
+            document.getElementById('task-status').value = task.status;
+            
+            editingTaskId = task.id;
+            loadCategoriesForTaskForm(task.categories);
+        }
+
+        function hideAllSections() {
+            loginForm.classList.add('hidden');
+            registerForm.classList.add('hidden');
+            dashboard.classList.add('hidden');
+            taskForm.classList.add('hidden');
+            categoriesSection.classList.add('hidden');
+            
+            // Hide error messages
+            document.getElementById('login-error').classList.add('hidden');
+            document.getElementById('register-error').classList.add('hidden');
+            document.getElementById('task-form-error').classList.add('hidden');
+            document.getElementById('category-form-error').classList.add('hidden');
+        }
+
+        function updateAuthUI() {
+            if (currentUser) {
+                loginBtn.classList.add('hidden');
+                mobileLoginBtn.classList.add('hidden');
+                logoutBtn.classList.remove('hidden');
+                mobileLogoutBtn.classList.remove('hidden');
+                userGreeting.textContent = `Hello, ${currentUser.username}`;
+            } else {
+                loginBtn.classList.remove('hidden');
+                mobileLoginBtn.classList.remove('hidden');
+                logoutBtn.classList.add('hidden');
+                mobileLogoutBtn.classList.add('hidden');
+                userGreeting.textContent = 'Hello, Guest';
+            }
+        }
+        function handleLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorElement = document.getElementById('login-error');
+            
+            // Simple validation
+            if (!username || !password) {
+                errorElement.textContent = 'Please enter both username and password';
+                errorElement.classList.remove('hidden');
+                return;
+            }
+            
+            // Demo authentication
+            if ((username === DEMO_USER.username || username === DEMO_USER.email) && password === DEMO_USER.password) {
+                currentUser = DEMO_USER;
+                updateAuthUI();
+                showDashboard();
+            } else {
+                errorElement.textContent = 'Invalid username or password';
+                errorElement.classList.remove('hidden');
+            }
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            const username = document.getElementById('reg-username').value;
+            const email = document.getElementById('reg-email').value;
+            const password = document.getElementById('reg-password').value;
+            const confirmPassword = document.getElementById('reg-confirm-password').value;
+            const errorElement = document.getElementById('register-error');
+            
+            // Simple validation
+            if (!username || !email || !password) {
+                errorElement.textContent = 'Please fill in all required fields';
+                errorElement.classList.remove('hidden');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                errorElement.textContent = 'Passwords do not match';
+                errorElement.classList.remove('hidden');
+                return;
+            }
+            
+            // For demo, just log in as the demo user
+            currentUser = DEMO_USER;
+            updateAuthUI();
+            showDashboard();
+        }
+
+        function handleLogout() {
+            currentUser = null;
+            updateAuthUI();
+            showLoginForm();
+        }
+
+        function loadTasks() {
+            const taskList = document.getElementById('task-list');
+            const noTasks = document.getElementById('no-tasks');
+            const tasksLoading = document.getElementById('tasks-loading');
+            
+            // Show loading
+            taskList.innerHTML = '';
+            noTasks.classList.add('hidden');
+            tasksLoading.classList.remove('hidden');
+            
+            // Simulate API call
+            setTimeout(() => {
+                tasksLoading.classList.add('hidden');
+                
+                // Apply filters
+                const statusFilter = document.getElementById('status-filter').value;
+                const priorityFilter = document.getElementById('priority-filter').value;
+                const categoryFilter = document.getElementById('category-filter').value;
+                
+                let filteredTasks = [...tasks];
+                
+                if (statusFilter !== '') {
+                    filteredTasks = filteredTasks.filter(task => task.status.toString() === statusFilter);
+                }
+                
+                if (priorityFilter !== '') {
+                    filteredTasks = filteredTasks.filter(task => task.priority.toString() === priorityFilter);
+                }
+                
+                if (categoryFilter !== '') {
+                    filteredTasks = filteredTasks.filter(task => task.categories.includes(parseInt(categoryFilter)));
+                }
+                
+                // Sort by due date and priority
+                filteredTasks.sort((a, b) => {
+                    if (a.due_date && b.due_date) {
+                        return new Date(a.due_date) - new Date(b.due_date);
+                    }
+                    if (a.due_date) return -1;
+                    if (b.due_date) return 1;
+                    return b.priority - a.priority;
+                });
+                
+                if (filteredTasks.length === 0) {
+                    noTasks.classList.remove('hidden');
+                } else {
+                    filteredTasks.forEach(task => {
+                        const taskElement = createTaskElement(task);
+                        taskList.appendChild(taskElement);
+                    });
+                }
+                
+                // Load categories for filter
+                categoryFilter = document.getElementById('category-filter');
+                categoryFilter.innerHTML = '<option value="">All Categories</option>';
+                
+                categories.forEach(category => {
+                    const option = document.createElement('option');
+                    option.value = category.id;
+                    option.textContent = category.name;
+                    categoryFilter.appendChild(option);
+                });
+            }, 500);
+        }
+        function createTaskElement(task) {
+            const taskElement = document.createElement('div');
+            taskElement.className = 'bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow task-card';
+            
+            const taskCategories = task.categories.map(id => categories.find(c => c.id === id)).filter(Boolean);
+            
+            const priorityLabel = getPriorityLabel(task.priority);
+            const priorityColor = getPriorityColor(task.priority);
+            const statusLabel = getStatusLabel(task.status);
+            const statusColor = getStatusColor(task.status);
+            
+            taskElement.innerHTML = `
+                <div class="flex flex-col md:flex-row md:justify-between md:items-center">
+                    <div class="flex-1">
+                        <h3 class="text-lg font-semibold text-gray-800">${task.title}</h3>
+                        <p class="text-gray-600 mt-1 line-clamp-2">${task.description || 'No description'}</p>
+                        
+                        <div class="mt-3 flex flex-wrap gap-2">
+                            <span class="px-2 py-1 rounded-full text-xs font-medium ${statusColor}">
+                                ${statusLabel}
+                            </span>
+                            <span class="px-2 py-1 rounded-full text-xs font-medium ${priorityColor}">
+                                ${priorityLabel}
+                            </span>
+                            <span class="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                Due: ${task.due_date ? formatDate(task.due_date) : 'No due date'}
+                            </span>
+                            
+                            ${taskCategories.map(category => `
+                                <span 
+                                    class="px-2 py-1 rounded-full text-xs font-medium text-white"
+                                    style="background-color: ${category.color}"
+                                >
+                                    ${category.name}
+                                </span>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="flex mt-4 md:mt-0 space-x-2">
+                        <button
+                            class="p-2 text-blue-600 hover:bg-blue-50 rounded-full"
+                            title="Edit"
+                            onclick="editTask(${task.id})"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                        </button>
+                        <button
+                            class="p-2 text-red-600 hover:bg-red-50 rounded-full"
+                            title="Delete"
+                            onclick="deleteTask(${task.id})"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            return taskElement;
+        }
+
+        function getPriorityLabel(priority) {
+            switch (parseInt(priority)) {
+                case 0: return 'Low';
+                case 1: return 'Medium';
+                case 2: return 'High';
+                default: return 'Unknown';
+            }
+        }
+
+        function getPriorityColor(priority) {
+            switch (parseInt(priority)) {
+                case 0: return 'bg-green-100 text-green-800';
+                case 1: return 'bg-yellow-100 text-yellow-800';
+                case 2: return 'bg-red-100 text-red-800';
+                default: return 'bg-gray-100 text-gray-800';
+            }
+        }
+
+        function getStatusLabel(status) {
+            switch (parseInt(status)) {
+                case 0: return 'Todo';
+                case 1: return 'In Progress';
+                case 2: return 'Done';
+                default: return 'Unknown';
+            }
+        }
+
+        function getStatusColor(status) {
+            switch (parseInt(status)) {
+                case 0: return 'bg-blue-100 text-blue-800';
+                case 1: return 'bg-purple-100 text-purple-800';
+                case 2: return 'bg-green-100 text-green-800';
+                default: return 'bg-gray-100 text-gray-800';
+            }
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'No due date';
+            const date = new Date(dateString);
+            return date.toLocaleDateString();
+        }
+        function handleTaskSubmit(e) {
+            e.preventDefault();
+            const taskId = document.getElementById('task-id').value;
+            const title = document.getElementById('task-title').value;
+            const description = document.getElementById('task-description').value;
+            const dueDate = document.getElementById('task-due-date').value;
+            const priority = document.getElementById('task-priority').value;
+            const status = document.getElementById('task-status').value;
+            
+            // Get selected categories
+            const categoriesSelect = document.getElementById('task-categories');
+            const selectedCategories = Array.from(categoriesSelect.selectedOptions).map(option => parseInt(option.value));
+            
+            if (taskId) {
+                // Update existing task
+                const taskIndex = tasks.findIndex(t => t.id === parseInt(taskId));
+                if (taskIndex !== -1) {
+                    tasks[taskIndex] = {
+                        ...tasks[taskIndex],
+                        title,
+                        description,
+                        due_date: dueDate,
+                        priority: parseInt(priority),
+                        status: parseInt(status),
+                        categories: selectedCategories,
+                        updated_at: new Date().toISOString()
+                    };
+                }
+            } else {
+                // Create new task
+                const newTask = {
+                    id: nextTaskId++,
+                    title,
+                    description,
+                    due_date: dueDate,
+                    priority: parseInt(priority),
+                    status: parseInt(status),
+                    user_id: currentUser.id,
+                    categories: selectedCategories,
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString()
+                };
+                
+                tasks.push(newTask);
+            }
+            
+            showDashboard();
+        }
+
+        function cancelTaskForm() {
+            showDashboard();
+        }
+
+        function loadCategoriesForTaskForm(selectedCategoryIds = []) {
+            const categoriesSelect = document.getElementById('task-categories');
+            categoriesSelect.innerHTML = '';
+            
+            categories.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category.id;
+                option.textContent = category.name;
+                
+                if (selectedCategoryIds.includes(category.id)) {
+                    option.selected = true;
+                }
+                
+                categoriesSelect.appendChild(option);
+            });
+        }
+
+        function filterTasks() {
+            loadTasks();
+        }
+
+        function loadCategories() {
+            const categoryList = document.getElementById('category-list');
+            const noCategories = document.getElementById('no-categories');
+            const categoriesLoading = document.getElementById('categories-loading');
+            
+            // Show loading
+            categoryList.innerHTML = '';
+            noCategories.classList.add('hidden');
+            categoriesLoading.classList.remove('hidden');
+            
+            // Simulate API call
+            setTimeout(() => {
+                categoriesLoading.classList.add('hidden');
+                
+                if (categories.length === 0) {
+                    noCategories.classList.remove('hidden');
+                } else {
+                    categories.forEach(category => {
+                        const categoryElement = createCategoryElement(category);
+                        categoryList.appendChild(categoryElement);
+                    });
+                }
+            }, 500);
+        }
+
+        function createCategoryElement(category) {
+            const isDefaultCategory = category.user_id === null;
+            
+            const categoryElement = document.createElement('div');
+            categoryElement.className = 'flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50';
+            
+            categoryElement.innerHTML = `
+                <div class="flex items-center">
+                    <div 
+                        class="w-6 h-6 rounded-full mr-3" 
+                        style="background-color: ${category.color}"
+                    ></div>
+                    <span class="font-medium">${category.name}</span>
+                    ${isDefaultCategory ? `
+                        <span class="ml-2 px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded-full">Default</span>
+                    ` : ''}
+                </div>
+                
+                <div class="flex space-x-2">
+                    ${!isDefaultCategory ? `
+                        <button
+                            class="p-1.5 text-blue-600 hover:bg-blue-50 rounded"
+                            title="Edit"
+                            onclick="editCategory(${category.id})"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                        </button>
+                        <button
+                            class="p-1.5 text-red-600 hover:bg-red-50 rounded"
+                            title="Delete"
+                            onclick="deleteCategory(${category.id})"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </button>
+                    ` : ''}
+                </div>
+            `;
+            
+            return categoryElement;
+        }
+
+        function handleCategorySubmit(e) {
+            e.preventDefault();
+            const categoryId = document.getElementById('category-id').value;
+            const name = document.getElementById('category-name').value;
+            const color = document.getElementById('category-color').value;
+            
+            if (categoryId) {
+                // Update existing category
+                const categoryIndex = categories.findIndex(c => c.id === parseInt(categoryId));
+                if (categoryIndex !== -1) {
+                    categories[categoryIndex] = {
+                        ...categories[categoryIndex],
+                        name,
+                        color
+                    };
+                }
+                
+                // Reset form
+                document.getElementById('category-form-title').textContent = 'Add New Category';
+                document.getElementById('category-submit-btn').textContent = 'Add Category';
+                document.getElementById('category-submit-btn').classList.add('w-full');
+                document.getElementById('category-cancel-btn').classList.add('hidden');
+                document.getElementById('category-id').value = '';
+                document.getElementById('category-form').reset();
+                document.getElementById('category-color').value = '#3498db';
+                document.getElementById('category-color-picker').value = '#3498db';
+                editingCategoryId = null;
+            } else {
+                // Create new category
+                const newCategory = {
+                    id: nextCategoryId++,
+                    name,
+                    color,
+                    user_id: currentUser.id
+                };
+                
+                categories.push(newCategory);
+                document.getElementById('category-form').reset();
+                document.getElementById('category-color').value = '#3498db';
+                document.getElementById('category-color-picker').value = '#3498db';
+            }
+            
+            loadCategories();
+        }
+
+        function cancelCategoryForm() {
+            document.getElementById('category-form-title').textContent = 'Add New Category';
+            document.getElementById('category-submit-btn').textContent = 'Add Category';
+            document.getElementById('category-submit-btn').classList.add('w-full');
+            document.getElementById('category-cancel-btn').classList.add('hidden');
+            document.getElementById('category-id').value = '';
+            document.getElementById('category-form').reset();
+            document.getElementById('category-color').value = '#3498db';
+            document.getElementById('category-color-picker').value = '#3498db';
+            editingCategoryId = null;
+        }
+
+        // Global functions for event handlers
+        window.editTask = function(taskId) {
+            showEditTaskForm(taskId);
+        };
+
+        window.deleteTask = function(taskId) {
+            if (confirm('Are you sure you want to delete this task?')) {
+                tasks = tasks.filter(task => task.id !== taskId);
+                loadTasks();
+            }
+        };
+
+        window.editCategory = function(categoryId) {
+            const category = categories.find(c => c.id === categoryId);
+            if (!category) return;
+            
+            document.getElementById('category-form-title').textContent = 'Edit Category';
+            document.getElementById('category-submit-btn').textContent = 'Update Category';
+            document.getElementById('category-submit-btn').classList.remove('w-full');
+            document.getElementById('category-cancel-btn').classList.remove('hidden');
+            
+            document.getElementById('category-id').value = category.id;
+            document.getElementById('category-name').value = category.name;
+            document.getElementById('category-color').value = category.color;
+            document.getElementById('category-color-picker').value = category.color;
+            
+            editingCategoryId = category.id;
+        };
+
+        window.deleteCategory = function(categoryId) {
+            if (confirm('Are you sure you want to delete this category? This will remove the category from all tasks.')) {
+                // Remove category from all tasks
+                tasks.forEach(task => {
+                    task.categories = task.categories.filter(id => id !== categoryId);
+                });
+                
+                // Remove category
+                categories = categories.filter(category => category.id !== categoryId);
+                loadCategories();
+            }
+        };
+
+        // Initialize
+        updateAuthUI();
+        showLoginForm();
+    </script>
+</body>
+</html>
